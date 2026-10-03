@@ -1,0 +1,12 @@
+.env
+*.class
+bin/
+out/
+.idea/
+*.iml
+*.zip
+target/
+
+# Entregas académicas
+[Ee]ntrega*/
+[Ee]ntrega [0-9]*/

@@ -1,0 +1,176 @@
+{
+  "schema_version": 1,
+  "diagram_type": "lifecycle",
+  "meta": {
+    "title": "Flujo de Estados de Baños",
+    "quality_profile": "showcase",
+    "viewBox": [1030, 630],
+    "views": [
+      {
+        "id": "ciclo-operativo",
+        "label": "Ciclo Operativo Normal",
+        "focus": ["libre", "ocupado", "saturado"],
+        "note": "Flujo primario de ingreso, rotación y control de capacidad."
+      },
+      {
+        "id": "mantenimiento-rutina",
+        "label": "Mantenimiento e Higiene",
+        "focus": ["ocupado", "mantenimiento", "libre"],
+        "note": "Derivación por ciclo de N usos, reporte de higiene y retorno post limpieza."
+      },
+      {
+        "id": "contingencia-falla",
+        "label": "Avería y Reparación",
+        "focus": ["fuera_servicio", "mantenimiento", "libre"],
+        "note": "Aislamiento técnico por avería y rehabilitación tras reparación."
+      }
+    ]
+  },
+  "lanes": [
+    { "id": "main", "label": "Operación Activa" },
+    { "id": "waiting", "label": "Control y Mantenimiento" },
+    { "id": "terminal", "label": "Fuera de Servicio" }
+  ],
+  "states": [
+    {
+      "id": "libre",
+      "type": "start",
+      "label": "LIBRE",
+      "sublabel": "Permite ingreso",
+      "tag": "Disponible",
+      "step": "01",
+      "lane": "main",
+      "col": 1
+    },
+    {
+      "id": "ocupado",
+      "type": "active",
+      "label": "OCUPADO",
+      "sublabel": "En uso / Salida",
+      "tag": "Usuario adentro",
+      "step": "02",
+      "lane": "main",
+      "col": 2
+    },
+    {
+      "id": "saturado",
+      "type": "waiting",
+      "label": "SATURADO",
+      "sublabel": "Cola llena (Meta-estado)",
+      "tag": "Bloquea nuevo ingreso",
+      "lane": "waiting",
+      "col": 0
+    },
+    {
+      "id": "mantenimiento",
+      "type": "decision",
+      "label": "MANTENIMIENTO",
+      "sublabel": "Limpieza / Cooldown",
+      "tag": "Bloquea ingreso",
+      "lane": "waiting",
+      "col": 1
+    },
+    {
+      "id": "fuera_servicio",
+      "type": "failure",
+      "label": "FUERA DE SERVICIO",
+      "sublabel": "Descompuesto / Inactivo",
+      "tag": "No visible",
+      "lane": "terminal",
+      "col": 1
+    }
+  ],
+  "transitions": [
+    {
+      "id": "tr-ingreso",
+      "from": "libre",
+      "to": "ocupado",
+      "variant": "default",
+      "fromSide": "right",
+      "toSide": "left",
+      "route": "straight"
+    },
+    {
+      "id": "tr-salida",
+      "from": "ocupado",
+      "to": "libre",
+      "variant": "default",
+      "fromSide": "top",
+      "toSide": "top",
+      "route": "top-channel",
+      "channelY": 76
+    },
+    {
+      "id": "tr-limite",
+      "from": "ocupado",
+      "to": "saturado",
+      "variant": "security",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "route": "straight"
+    },
+    {
+      "id": "tr-desagota",
+      "from": "saturado",
+      "to": "libre",
+      "variant": "default",
+      "fromSide": "left",
+      "toSide": "bottom",
+      "via": [[300, 307], [300, 210], [248, 210]]
+    },
+    {
+      "id": "tr-mantenimiento-rutina",
+      "from": "ocupado",
+      "to": "mantenimiento",
+      "variant": "security",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "via": [[402, 230], [556, 230]]
+    },
+    {
+      "id": "tr-limpieza-completada",
+      "from": "mantenimiento",
+      "to": "libre",
+      "variant": "emphasis",
+      "fromSide": "left",
+      "toSide": "bottom",
+      "via": [[470, 307], [470, 370], [210, 370], [210, 210], [248, 210]]
+    },
+    {
+      "id": "tr-descompostura",
+      "from": "mantenimiento",
+      "to": "fuera_servicio",
+      "variant": "security",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "route": "straight"
+    },
+    {
+      "id": "tr-reparado",
+      "from": "fuera_servicio",
+      "to": "mantenimiento",
+      "variant": "emphasis",
+      "fromSide": "right",
+      "toSide": "right",
+      "via": [[640, 479], [640, 307]]
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Operación y Control de Capacidad",
+      "items": [
+        "LIBRE y OCUPADO habilitan rotación activa y métricas.",
+        "SATURADO es un meta-estado: bloquea nuevos ingresos."
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Mantenimiento y Recuperación",
+      "items": [
+        "MANTENIMIENTO aplica cooldown y retorno tras limpieza.",
+        "FUERA DE SERVICIO aísla averías hasta reparar y limpiar."
+      ]
+    }
+  ]
+}
