@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <title>Administración de baños</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="admin">
+  <header class="admin-top">
+    <div><h1>Administración</h1><p class="sub" id="evento"></p></div>
+    <a class="btn tinted" href="index.html">Volver a la app</a>
+  </header>
+  <main>
+    <h2>Baños instalados</h2>
+    <div class="tabla-wrap">
+      <table>
+        <caption class="sr">Baños instalados y acciones del personal</caption>
+        <thead><tr><th scope="col">#</th><th scope="col">Dirección</th><th scope="col">Estado</th><th scope="col">Cola</th><th scope="col">Funcionalidades</th><th scope="col">Acciones</th></tr></thead>
+        <tbody id="filas"></tbody>
+      </table>
+    </div>
+    <p class="hint" style="margin:8px 4px">Qué acciones se aceptan lo decide el estado del baño (State). Si una no corresponde, el servidor la rechaza y se muestra el motivo.</p>
+
+    <h2>Alta de baño</h2>
+    <form id="alta" class="form-alta">
+      <label>Dirección<input type="text" name="direccion" placeholder="Ej.: Av. de Mayo y Bolívar"></label>
+      <label>Latitud<input type="number" step="any" name="lat" value="-34.6060" required></label>
+      <label>Longitud<input type="number" step="any" name="lng" value="-58.3770" required></label>
+      <label>Capacidad de la cola<input type="number" name="capacidad" value="5" min="1" required></label>
+      <label>Minutos por persona<input type="number" step="any" name="tiempoPromedio" value="3" min="0.5" required></label>
+      <fieldset style="border:0;padding:0;margin:0"><legend class="hint" style="padding:0 0 6px">Funcionalidades</legend>
+        <div class="checks">
+          <label><input type="checkbox" name="f" value="MOVILIDAD_REDUCIDA"> Movilidad reducida</label>
+          <label><input type="checkbox" name="f" value="LAVAMANOS"> Lavamanos</label>
+          <label><input type="checkbox" name="f" value="DISPENSER_ALCOHOL"> Alcohol</label>
+          <label><input type="checkbox" name="f" value="CAMBIADOR_BEBES"> Cambiador de bebés</label>
+          <label><input type="checkbox" name="f" value="ESPEJO"> Espejo</label>
+        </div></fieldset>
+      <button class="btn prominent" type="submit">Crear y asignar al evento de hoy</button>
+    </form>
+  </main>
+  <div id="avisos" class="avisos" aria-live="polite"></div>
+  <script src="admin.js"></script>
+</body>
+</html>

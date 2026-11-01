@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#E5E8E2" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0F1211" media="(prefers-color-scheme: dark)">
+  <title>Baños cercanos</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="preload" href="fonts/barlow-condensed-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="bar" id="bar">
+    <div class="bar-in">
+      <div class="bar-title" id="bar-title">Baños</div>
+      <div class="bar-actions">
+        <button class="icon-btn" id="btn-filtros" data-act="filtros" aria-label="Filtros y ubicación">
+          <svg class="ic" aria-hidden="true"><use href="icons.svg#i-sliders"/></svg><span class="cnt" id="cnt-filtros" hidden></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section id="vista-lista" class="vista" aria-labelledby="t-lista">
+      <div class="large-title" id="titulo-lista"><h1 id="t-lista">Baños</h1><p id="evento">Cargando…</p><p class="resumen" id="resumen"></p></div>
+      <div class="ruta" id="ruta" role="group" aria-label="Recorrido del evento con los baños ubicados sobre la ruta" hidden></div>
+      <div class="controles">
+        <label class="pill-select"><span>Ordenar</span><b id="orden-txt">Cercanía</b>
+          <svg class="ic sm" aria-hidden="true"><use href="icons.svg#i-chevron"/></svg>
+          <select id="criterio" aria-label="Ordenar por">
+            <option value="CERCANIA">Cercanía</option>
+            <option value="CANTIDAD_ESPERA">Personas esperando</option>
+            <option value="TIEMPO_ESPERA">Tiempo de espera</option>
+            <option value="MEJOR_OPCION">Mejor opción</option>
+          </select>
+        </label>
+        <span id="activos" style="display:contents"></span>
+      </div>
+      <div id="lista" class="lista"></div>
+      <p class="pie"><a href="admin.html">Acceso del personal</a></p>
+    </section>
+
+    <section id="vista-mapa" class="vista" hidden aria-label="Mapa de baños">
+      <div id="mapa"></div>
+      <div id="peek" class="peek" hidden></div>
+    </section>
+
+    <section id="vista-cola" class="vista" hidden aria-labelledby="t-cola">
+      <div class="large-title" id="titulo-cola"><h1 id="t-cola">Mi cola</h1></div>
+      <div id="cola"></div>
+    </section>
+  </main>
+
+  <nav class="tabbar" aria-label="Secciones">
+    <button class="tab" data-act="tab" data-vista="lista" aria-current="page"><svg class="ic" aria-hidden="true"><use href="icons.svg#i-list"/></svg>Baños</button>
+    <button class="tab" data-act="tab" data-vista="mapa"><svg class="ic" aria-hidden="true"><use href="icons.svg#i-map"/></svg>Mapa</button>
+    <button class="tab" data-act="tab" data-vista="cola" id="tab-cola"><svg class="ic" aria-hidden="true"><use href="icons.svg#i-people"/></svg>Mi cola<span class="badge" id="badge-cola" hidden aria-label="Es tu turno">!</span></button>
+  </nav>
+
+  <div id="avisos" class="avisos" aria-live="polite"></div>
+
+  <!-- Hoja de filtros -->
+  <dialog id="sheet-filtros" class="sheet" aria-labelledby="h-filtros">
+    <div class="sheet-in">
+      <div class="grabber-zone"><div class="grabber"></div></div>
+      <div class="sheet-bar">
+        <button class="btn plain izq" data-act="reset-filtros">Restablecer</button>
+        <h2 id="h-filtros">Filtros</h2>
+        <button class="btn prominent der" data-act="cerrar-sheet">Listo</button>
+      </div>
+      <div class="sheet-body">
+        <div class="grupo-t">Tu ubicación</div>
+        <div class="grupo"><div class="ubic">
+          <div id="ubic-txt">Ubicación de ejemplo</div>
+          <div class="botones">
+            <button class="btn tinted" data-act="geo"><svg class="ic sm" aria-hidden="true"><use href="icons.svg#i-locate"/></svg>Usar mi ubicación</button>
+            <button class="btn tinted" data-act="ejemplo">Ubicación de ejemplo</button>
+          </div>
+          <p class="hint">También podés tocar el mapa para moverte a otro punto.</p>
+        </div></div>
+
+        <div class="grupo-t">Distancia máxima</div>
+        <div class="grupo"><div class="segs" role="radiogroup" aria-label="Distancia máxima">
+          <label class="seg"><input type="radio" name="dist" value="" checked>Sin límite</label>
+          <label class="seg"><input type="radio" name="dist" value="200">200 m</label>
+          <label class="seg"><input type="radio" name="dist" value="500">500 m</label>
+          <label class="seg"><input type="radio" name="dist" value="1000">1 km</label>
+          <label class="seg"><input type="radio" name="dist" value="2000">2 km</label>
+        </div></div>
+
+        <div class="grupo-t">Funcionalidades</div>
+        <div class="grupo">
+          <label class="fila-sw"><span class="et"><svg class="ic" aria-hidden="true"><use href="icons.svg#i-access"/></svg>Movilidad reducida</span><input class="sw" type="checkbox" role="switch" data-func="MOVILIDAD_REDUCIDA"></label>
+          <label class="fila-sw"><span class="et"><svg class="ic" aria-hidden="true"><use href="icons.svg#i-drop"/></svg>Lavamanos</span><input class="sw" type="checkbox" role="switch" data-func="LAVAMANOS"></label>
+          <label class="fila-sw"><span class="et"><svg class="ic" aria-hidden="true"><use href="icons.svg#i-sanitizer"/></svg>Dispenser de alcohol</span><input class="sw" type="checkbox" role="switch" data-func="DISPENSER_ALCOHOL"></label>
+          <label class="fila-sw"><span class="et"><svg class="ic" aria-hidden="true"><use href="icons.svg#i-baby"/></svg>Cambiador de bebés</span><input class="sw" type="checkbox" role="switch" data-func="CAMBIADOR_BEBES"></label>
+          <label class="fila-sw"><span class="et"><svg class="ic" aria-hidden="true"><use href="icons.svg#i-mirror"/></svg>Espejo</span><input class="sw" type="checkbox" role="switch" data-func="ESPEJO"></label>
+        </div>
+
+        <div class="grupo-t">Estado</div>
+        <div class="grupo">
+          <label class="fila-sw"><span class="et"><svg class="ic" aria-hidden="true"><use href="icons.svg#i-check"/></svg>Libre</span><input class="sw" type="checkbox" role="switch" data-estado="LIBRE"></label>
+          <label class="fila-sw"><span class="et"><svg class="ic" aria-hidden="true"><use href="icons.svg#i-user"/></svg>Ocupado</span><input class="sw" type="checkbox" role="switch" data-estado="OCUPADO"></label>
+          <label class="fila-sw"><span class="et"><svg class="ic" aria-hidden="true"><use href="icons.svg#i-alert"/></svg>Saturado</span><input class="sw" type="checkbox" role="switch" data-estado="SATURADO"></label>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="sheet-detalle" class="sheet" aria-label="Detalle del baño"></dialog>
+  <dialog id="sheet-confirmar" class="sheet" aria-label="Confirmar"></dialog>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
