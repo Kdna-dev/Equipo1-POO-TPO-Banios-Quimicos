@@ -594,6 +594,32 @@ Los controllers tampoco deben implementar reglas complejas.
 
 La lógica principal debe permanecer en los servicios y objetos del dominio.
 
+## Estructura de paquetes (MVC)
+
+El código de `src/` está segmentado en las tres capas de MVC:
+
+```text
+src/
+├── Modelo/                    lógica de negocio, sin HTTP ni JSON
+│   ├── Dominio/               entidades + State (BanioState/) + Observer
+│   ├── EstrategiaBusqueda/    Strategy de ordenamiento
+│   ├── Repository/            interfaces + DB/ (Postgres) + Memoria/
+│   └── Aplicacion/            servicios: BanioService, ColaService, PersonaService,
+│                              EventoService, AtencionService (turnos, ocupantes,
+│                              acciones de administración) y notificaciones
+├── Vista/                     arma la respuesta que ve el frontend
+│   ├── Json                   serializador
+│   └── *Vista                 Banio, Seguimiento, Evento, Persona, Notificacion, Respuesta
+├── Controlador/               traduce la request al modelo y elige la vista
+│   ├── EventoController, BanioController, PersonaController, AdminController
+│   └── Http/                  ServidorHttp (front controller), Peticion, ArchivosEstaticos
+├── Main.java                  demo por consola del dominio
+└── MainWeb.java               arma Modelo + Controladores y levanta el servidor
+```
+
+Reglas de dependencia: `Controlador` usa `Modelo` y `Vista`; `Vista` solo lee el `Modelo`;
+`Modelo` no conoce a ninguno de los otros dos. El frontend estático (`web/`) es la vista del navegador.
+
 ---
 
 # 15. Dominio
