@@ -1,10 +1,10 @@
-import Aplicacion.ColaService;
-import Dominio.*;
-import Dominio.BanioState.*;
-import EstrategiaBusqueda.*;
-import Repository.DB.BanioRepositoryDB;
-import Repository.DB.DatabaseConnection;
-import Repository.IBanioRepository;
+import Modelo.Aplicacion.ColaService;
+import Modelo.Dominio.*;
+import Modelo.Dominio.BanioState.*;
+import Modelo.EstrategiaBusqueda.*;
+import Modelo.Repository.DB.BanioRepositoryDB;
+import Modelo.Repository.DB.DatabaseConnection;
+import Modelo.Repository.IBanioRepository;
 
 import java.sql.Connection;
 import java.sql.SQLException;
